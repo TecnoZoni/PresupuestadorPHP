@@ -3,22 +3,22 @@
     <nav class="d-flex flex-column flex-shrink-0 p-3 text-bg-dark" style="width: 250px; min-height: 100vh;">
         <a href="<?php echo APP_URL; ?>dashboard/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
             <i class="bi bi-speedometer2 fs-4 me-2"></i>
-            <span class="fs-5 fw-bold">FACTURADOR</span>
+            <span class="fs-5 fw-bold">PRESUPUESTADOR</span>
         </a>
         <hr>
         <ul class="nav nav-pills flex-column mb-auto">
 
-            <!-- Facturas -->
+            <!-- Presupuestos -->
             <li class="nav-item">
-                <a class="nav-link text-white dropdown-toggle" data-bs-toggle="collapse" href="#submenuFacturas" role="button" aria-expanded="false" aria-controls="submenuFacturas">
+                <a class="nav-link text-white dropdown-toggle" data-bs-toggle="collapse" href="#submenuPresupuestos" role="button" aria-expanded="false" aria-controls="submenuPresupuestos">
                     <i class="bi bi-file-earmark-text fs-5 me-2"></i>
-                    Facturas
+                    Presupuestos
                 </a>
-                <div class="collapse ps-3" id="submenuFacturas">
+                <div class="collapse ps-3" id="submenuPresupuestos">
                     <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                        <li><a href="<?php echo APP_URL; ?>invoiceNew/" class="nav-link text-white"><i class="bi bi-file-earmark-plus me-2"></i>Crear Factura</a></li>
-                        <li><a href="<?php echo APP_URL; ?>invoiceList/" class="nav-link text-white"><i class="bi bi-journal-text me-2"></i>Listar Facturas</a></li>
-                        <li><a href="<?php echo APP_URL; ?>invoiceSearch/" class="nav-link text-white"><i class="bi bi-search me-2"></i>Buscar Facturas</a></li>
+                        <li><a href="<?php echo APP_URL; ?>presupuestoNew/" class="nav-link text-white"><i class="bi bi-file-earmark-plus me-2"></i>Crear Presupuesto</a></li>
+                        <li><a href="<?php echo APP_URL; ?>presupuestoList/" class="nav-link text-white"><i class="bi bi-journal-text me-2"></i>Listar Presupuestos</a></li>
+                        <li><a href="<?php echo APP_URL; ?>presupuestoSearch/" class="nav-link text-white"><i class="bi bi-search me-2"></i>Buscar Presupuestos</a></li>
                     </ul>
                 </div>
             </li>

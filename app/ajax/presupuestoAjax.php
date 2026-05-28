@@ -4,23 +4,23 @@ require_once "../../config/app.php";
 require_once  "../views/inc/session_start.php";
 require_once "../../autoload.php";
 
-use app\controllers\invoiceController;
+use app\controllers\presupuestoController;
 
-if (isset($_POST["modulo_factura"])) {
+if (isset($_POST["modulo_presupuesto"])) {
 
-    $insFactura = new invoiceController();
+    $insPresupuesto = new presupuestoController();
 
-    if ($_POST["modulo_factura"] == "crear") {
-        echo $insFactura->registrarFacturaControlador();
+    if ($_POST["modulo_presupuesto"] == "crear") {
+        echo $insPresupuesto->registrarPresupuestoControlador();
     }
-    if ($_POST["modulo_factura"] == "eliminar") {
-        echo $insFactura->eliminarFacturaControlador();
+    if ($_POST["modulo_presupuesto"] == "eliminar") {
+        echo $insPresupuesto->eliminarPresupuestoControlador();
     }
-    if ($_POST["modulo_factura"] == "actualizar") {
-        echo $insFactura->actualizarFacturaControlador();
+    if ($_POST["modulo_presupuesto"] == "actualizar") {
+        echo $insPresupuesto->actualizarPresupuestoControlador();
     }
-    if ($_POST["modulo_factura"] == "generarPDF") {
-        echo $insFactura->generarFacturaControlador();
+    if ($_POST["modulo_presupuesto"] == "generarPDF") {
+        echo $insPresupuesto->generarPresupuestoControlador();
     }
 } else {
     session_destroy();

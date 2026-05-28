@@ -1,12 +1,12 @@
 <div class="container-fluid mb-4">
-    <h1 class="h3">Facturación</h1>
-    <h2 class="h5 text-muted">Crear nueva factura</h2>
+    <h1 class="h3">Presupuestos</h1>
+    <h2 class="h5 text-muted">Crear nuevo presupuesto</h2>
 </div>
 
 <div class="container py-4">
-    <form action="<?php echo APP_URL; ?>app/ajax/facturaAjax.php" method="POST" class="FormularioAjax" autocomplete="off">
+    <form action="<?php echo APP_URL; ?>app/ajax/presupuestoAjax.php" method="POST" class="FormularioAjax" autocomplete="off">
 
-        <input type="hidden" name="modulo_factura" value="crear">
+        <input type="hidden" name="modulo_presupuesto" value="crear">
 
         <!-- Cliente -->
         <div class="mb-4">
@@ -43,7 +43,7 @@
                 <input type="number" class="form-control" name="producto_cantidad" id="producto_cantidad">
             </div>
             <div class="col-md-4">
-                <label class="form-label">AGREGAR A LA FACTURA:</label>
+                <label class="form-label">AGREGAR AL PRESUPUESTO:</label>
                 <button class="btn btn-primary form-control">Agregar</button>
             </div>
         </div>
@@ -67,12 +67,12 @@
         <!-- Total -->
         <div class="text-end mb-4">
             <h5>Total: $<span id="total">0.00</span></h5>
-            <input type="hidden" name="factura_total" id="factura_total">
+            <input type="hidden" name="presupuesto_total" id="presupuesto_total">
         </div>
 
         <!-- Botón -->
         <div class="text-center">
-            <button type="submit" class="btn btn-success rounded-pill">Guardar factura</button>
+            <button type="submit" class="btn btn-success rounded-pill">Guardar presupuesto</button>
         </div>
     </form>
 </div>
@@ -124,7 +124,7 @@
         tabla.appendChild(fila);
 
         document.getElementById('total').textContent = total.toFixed(2);
-        document.getElementById('factura_total').value = total.toFixed(2);
+        document.getElementById('presupuesto_total').value = total.toFixed(2);
 
         document.getElementById('producto_id').value = '';
         document.getElementById('producto_cantidad').value = '';
@@ -135,6 +135,6 @@
         total -= subtotal;
 
         document.getElementById('total').textContent = total.toFixed(2);
-        document.getElementById('factura_total').value = total.toFixed(2);
+        document.getElementById('presupuesto_total').value = total.toFixed(2);
     }
 </script>

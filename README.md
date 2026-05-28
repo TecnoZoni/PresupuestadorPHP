@@ -1,11 +1,11 @@
-# FacturadorPHP
-Aplicación para creación de facturas en PDF, hecho con HTML, CSS, JS, PHP y MySQL.
+# PresupuestadorPHP
+Aplicación para creación de presupuestos en PDF, hecho con HTML, CSS, JS, PHP y MySQL.
 
 ## Resumen
 
-Aplicación web ligera para la gestión de clientes, productos y facturas.
+Aplicación web ligera para la gestión de clientes, productos y presupuestos.
 Utiliza un **patrón MVC propio**, peticiones **AJAX** para una interacción dinámica y **Bootstrap + SweetAlert2** para una mejor experiencia de usuario.
-Las facturas pueden descargarse en **PDF** mediante la librería **FPDF**.
+Los presupuestos pueden descargarse en **PDF** mediante la librería **FPDF**.
 
 ## Estado del proyecto
 
@@ -14,7 +14,7 @@ Las facturas pueden descargarse en **PDF** mediante la librería **FPDF**.
 
   * **Clientes**
   * **Productos**
-  * **Facturas** (cabecera + detalle)
+  * **Presupuestos** (cabecera + detalle)
 * Generación de PDF funcional.
 * Sistema de notificaciones en frontend (SweetAlert2).
 * Integración AJAX corregida para mejorar la limpieza de formularios y mostrar mensajes en el orden adecuado.
@@ -24,7 +24,7 @@ Las facturas pueden descargarse en **PDF** mediante la librería **FPDF**.
 * **PHP 7.4+** (procedural y POO según módulos).
 * **MySQL / MariaDB**.
 * **PDO** para el manejo seguro de base de datos.
-* **JavaScript** (AJAX con `Ajax.js`).
+* **JavaScript** (AJAX con `ajax.js`).
 * **Bootstrap 5** y **SweetAlert2**.
 * **FPDF** para generación de comprobantes en PDF.
 * **Apache con mod_rewrite** para friendly URLs.
@@ -42,28 +42,32 @@ Las facturas pueden descargarse en **PDF** mediante la librería **FPDF**.
 1. **Clonar el repositorio:**
 
 ```bash
-git clone https://github.com/TecnoZoni/FacturadorPHP.git
-cd facturadorPHP
+git clone https://github.com/TecnoZoni/PresupuestadorPHP.git
+cd PresupuestadorPHP
 ```
 
 2. **Importar la base de datos:**
 
-   * Importar `facturador.sql` desde phpMyAdmin (crea automáticamente la BD).
+   * Importar `presupuestador.sql` desde phpMyAdmin (crea automáticamente la BD).
 
-3. **Configurar credenciales en `config/server.php`:**
+3. **Configurar credenciales:**
+
+   * Copiar `config/server.example.php` a `config/server.php` y completar las credenciales:
 
 ```php
 <?php
 const DB_SERVER = 'localhost';
-const DB_NAME = 'facturador';
+const DB_NAME = 'presupuestador';
 const DB_USER = 'root';
 const DB_PASSWORD = '';
 ```
 
+   > `config/server.php` está en `.gitignore` para no subir credenciales al repositorio.
+
 4. **Iniciar la aplicación:**
 
    * Acceder a:
-     `http://localhost/facturadorPHP`
+     `http://localhost/PresupuestadorPHP`
 
 ---
 
@@ -73,24 +77,25 @@ const DB_PASSWORD = '';
 / (raíz del proyecto)         # Punto de entrada del sistema y archivos principales
 ├─ app/           # Núcleo de la aplicación (MVC + recursos)
 │  ├─ ajax/          # Controladores específicos para manejar solicitudes AJAX
-│  ├─ controllers/         # Controladores principales del sistema (Clientes, Productos, Facturas, Perfil)
+│  ├─ controllers/         # Controladores principales del sistema (Clientes, Productos, Presupuestos, Perfil)
 │  ├─ library/       # Librerías externas (FPDF para generación de PDFs)
-│  ├─ models/        # Modelos de datos (mainModel, viewModel, clases de acceso a BD)
+│  ├─ models/        # Modelos de datos (mainModel, viewsModel, clases de acceso a BD)
 │  ├─ views/         # Vistas y plantillas que componen la interfaz de usuario
 │     ├─ content/       # Contenido principal de vistas (listas, formularios, paneles, etc.)
 │     ├─ css/           # Estilos personalizados de la aplicación
-│     ├─ fotos/         # Imagen/logo correspondiente a la empresa configurada
+│     ├─ fotos/         # Imagen/logo correspondiente a la empresa configurada (ignorada en git)
 │     ├─ img/        # Iconos e imágenes utilizadas por la aplicación
 │     ├─ inc/        # Fragmentos PHP reutilizables (header, footer, sidebar, etc.)
 │     ├─ js/         # Scripts JS específicos de las vistas
 │     └─ utils/         # Recursos adicionales (ej. Bootstrap Icons)
 ├─ config/        # Archivos de configuración base del proyecto
-│  ├─ server.php        # Configuración de conexión a la base de datos
+│  ├─ server.php        # Configuración de conexión a la base de datos (ignorada en git)
+│  ├─ server.example.php # Plantilla de configuración de la base de datos
 │  └─ app.php        # Configuración general (paths, constantes globales, etc.)
+├─ .gitignore        # Archivos y carpetas excluidos del control de versiones
 ├─ .htaccess         # Reglas de URL amigables y configuración de Apache
 ├─ autoload.php         # Cargador automático de clases/controladores/modelos
-├─ Facturador.exe       # Ejecutable para iniciar XAMPP + abrir app (automatización)
-├─ facturador.sql          # Script SQL con la estructura de la base de datos
+├─ presupuestador.sql      # Script SQL con la estructura de la base de datos
 ├─ index.php         # Archivo de entrada principal de la aplicación (front controller)
 └─ README.md         # Documentación del proyecto
 ```
@@ -99,7 +104,7 @@ const DB_PASSWORD = '';
 
 # Esquema de Base de Datos
 
-Basado completamente en `facturador.sql` del proyecto.
+Basado completamente en `presupuestador.sql` del proyecto.
 
 ## Tablas principales
 
@@ -127,35 +132,35 @@ Basado completamente en `facturador.sql` del proyecto.
 
 ---
 
-### **3. factura**
+### **3. presupuesto**
 
-| Campo           | Tipo                   | Descripción          |
-| --------------- | ---------------------- | -------------------- |
-| factura_id (PK) | int(11) AUTO_INCREMENT | ID factura           |
-| cliente_id (FK) | int(11)                | Referencia a cliente |
-| factura_fecha   | datetime               | Fecha (default NOW)  |
-| factura_total   | decimal(10,2)          | Total calculado      |
+| Campo               | Tipo                   | Descripción          |
+| ------------------- | ---------------------- | -------------------- |
+| presupuesto_id (PK) | int(11) AUTO_INCREMENT | ID presupuesto       |
+| cliente_id (FK)     | int(11)                | Referencia a cliente |
+| presupuesto_fecha   | datetime               | Fecha (default NOW)  |
+| presupuesto_total   | decimal(10,2)          | Total calculado      |
 
 **Relación:**
-`factura.cliente_id → cliente.cliente_id`
+`presupuesto.cliente_id → cliente.cliente_id`
 
 ---
 
-### **4. detalle_factura**
+### **4. detalle_presupuesto**
 
-| Campo                           | Tipo                   | Descripción           |
-| ------------------------------- | ---------------------- | --------------------- |
-| detalle_factura_id (PK)         | int(11) AUTO_INCREMENT | Ítem detalle          |
-| factura_id (FK)                 | int(11)                | Referencia a factura  |
-| producto_id (FK)                | int(11)                | Referencia a producto |
-| detalle_factura_cantidad        | int(11)                | Unidades              |
-| detalle_factura_precio_unitario | decimal(10,2)          | Precio del producto   |
-| detalle_factura_subtotal        | decimal(10,2)          | Cantidad × precio     |
+| Campo                               | Tipo                   | Descripción              |
+| ----------------------------------- | ---------------------- | ------------------------ |
+| detalle_presupuesto_id (PK)         | int(11) AUTO_INCREMENT | Ítem detalle             |
+| presupuesto_id (FK)                 | int(11)                | Referencia a presupuesto |
+| producto_id (FK)                    | int(11)                | Referencia a producto    |
+| detalle_presupuesto_cantidad        | int(11)                | Unidades                 |
+| detalle_presupuesto_precio_unitario | decimal(10,2)          | Precio del producto      |
+| detalle_presupuesto_subtotal        | decimal(10,2)          | Cantidad × precio        |
 
 **Relaciones:**
 
-* `detalle_factura.factura_id → factura.factura_id`
-* `detalle_factura.producto_id → producto.producto_id`
+* `detalle_presupuesto.presupuesto_id → presupuesto.presupuesto_id`
+* `detalle_presupuesto.producto_id → producto.producto_id`
 
 ---
 
@@ -179,7 +184,7 @@ Configuración general del sistema / datos de la empresa.
 # Diagrama lógico (texto)
 
 ```
-cliente (1) ----- (N) factura (1) ----- (N) detalle_factura ----- (1) producto
+cliente (1) ----- (N) presupuesto (1) ----- (N) detalle_presupuesto ----- (1) producto
 ```
 
 ---
@@ -188,11 +193,11 @@ cliente (1) ----- (N) factura (1) ----- (N) detalle_factura ----- (1) producto
 
 1. Registrar clientes.
 2. Registrar productos.
-3. Crear una factura:
+3. Crear un presupuesto:
 
    * Seleccionar cliente.
    * Agregar productos dinámicamente vía AJAX.
-4. Guardar factura y generar PDF.
+4. Guardar presupuesto y generar PDF.
 5. Descargar o imprimir el comprobante.
 
 Las respuestas AJAX devuelven JSON y el frontend maneja notificaciones con SweetAlert2.
@@ -223,11 +228,11 @@ Describir la arquitectura actual para facilitar mantenimiento, extensión y onbo
 1. **Capa de Presentación (Views)**
 
    * Archivos PHP que contienen plantillas HTML y llamadas a JS/CSS.
-   * Vistas importantes: `dashboard`, `clientList`, `clientNew`, `invoiceList`, `invoiceNew`, `invoiceEdit`, `404`.
+   * Vistas importantes: `dashboard`, `clientList`, `clientNew`, `presupuestoList`, `presupuestoNew`, `presupuestoUpdate`, `404`.
 
 2. **Capa de Lógica (Controllers)**
 
-   * Controladores por dominio: `clientsController`, `productsController`, `invoicesController`, `configController`.
+   * Controladores por dominio: `clientController`, `productController`, `presupuestoController`, `configController`.
    * Responsables de validar entrada, invocar modelos y devolver vistas o JSON (para AJAX).
 
 3. **Capa de Persistencia (Models)**
@@ -239,16 +244,16 @@ Describir la arquitectura actual para facilitar mantenimiento, extensión y onbo
 
    * Librerías externas (Bootstrap, SweetAlert2, iconos locales), utilidades para PDFs, manejo de archivos (logos), subida de imágenes.
 
-5. **Frontend JS (Ajax.js y otros)**
+5. **Frontend JS (ajax.js y otros)**
 
    * Funciones para enviar peticiones AJAX (POST/GET), manejar respuestas JSON y mostrar alertas con SweetAlert2.
-   * Lógica para manipular dinámicamente la tabla de detalles de facturas (añadir filas, calcular totales).
+   * Lógica para manipular dinámicamente la tabla de detalles de presupuestos (añadir filas, calcular totales).
 
-## Flujo de una creación de factura (resumido)
+## Flujo de una creación de presupuesto (resumido)
 
-1. Usuario llena formulario de factura y agrega items en la tabla dinámica.
-2. JS (Ajax.js) serializa los datos y hace `fetch` / `XMLHttpRequest` al endpoint del controller `InvoicesController::store` (o ruta similar).
-3. Controller valida, crea registro en `facturas`, inserta `factura_items` y responde JSON con `status: success` y `id` de la factura.
+1. Usuario llena formulario de presupuesto y agrega items en la tabla dinámica.
+2. JS (ajax.js) serializa los datos y hace `fetch` al endpoint `presupuestoAjax.php` (controller `presupuestoController`).
+3. Controller valida, crea registro en `presupuesto`, inserta filas en `detalle_presupuesto` y responde JSON con `tipo` y mensaje.
 4. Frontend recibe JSON, limpia la UI (tabla y campos) y muestra SweetAlert2 con mensaje de éxito.
 
 
@@ -319,24 +324,19 @@ Cuando algo no funciona, ir paso a paso: reproducir, revisar logs, aislar la cap
 
 **Solución:**
 
-* Si instalaste la librería manualmente, verificar `require 'vendor/fpdf/fpdf.php'` o la ruta usada.
-* Si usás composer, ejecutar `composer install` y `require 'vendor/autoload.php'` cuando corresponda.
+* Si instalaste la librería manualmente, verificar la ruta usada en el `use`/`require`.
 * Probar la creación de un PDF mínimo (script de prueba) para aislar el problema.
 
 ---
 
-### 4) Problema: AJAX no notifica o no limpia el formulario (bug reportado en commit 9d442c6)
+### 4) Problema: AJAX no notifica o no limpia el formulario
 
 **Síntomas:** El formulario se envía pero la UI no se actualiza, o la alerta aparece antes de limpiar la tabla.
 
 **Verificar:**
 
-* Revisar `assets/js/Ajax.js` (o la ruta donde esté) y buscar el flujo posterior a `success` en la llamada AJAX.
+* Revisar `app/views/js/ajax.js` y buscar el flujo posterior a `success` en la llamada AJAX.
 * Asegurarse que la secuencia sea: 1) actualizar/limpiar DOM (tabla y campos) -> 2) disparar `swal` (SweetAlert) -> 3) opcionalmente redirigir/mostrar enlace al PDF.
-
-**Arreglo comprobado en repo:**
-
-* Se cambió el orden en el método que maneja la respuesta: primero limpiar `table` y `form fields`, luego disparar `SweetAlert2`.
 
 **Si volviera a ocurrir:**
 
@@ -351,12 +351,12 @@ Cuando algo no funciona, ir paso a paso: reproducir, revisar logs, aislar la cap
 
 **Verificar:**
 
-* Que `sweetalert2` esté correctamente incluido antes de `Ajax.js`.
-* Que no haya errores de sintaxis en `Ajax.js` (usar linter o abrir la consola del navegador).
+* Que `sweetalert2` esté correctamente incluido antes de `ajax.js`.
+* Que no haya errores de sintaxis en `ajax.js` (usar linter o abrir la consola del navegador).
 
 **Solución:**
 
-* Revisar el orden de inclusión de scripts: primero dependencias (jQuery si se usa, SweetAlert2), luego `Ajax.js`.
+* Revisar el orden de inclusión de scripts: primero dependencias (SweetAlert2), luego `ajax.js`.
 
 ---
 
@@ -366,12 +366,12 @@ Cuando algo no funciona, ir paso a paso: reproducir, revisar logs, aislar la cap
 
 **Verificar:**
 
-* Permisos del directorio `uploads/`, `storage/` o donde guardes los logos (permiso de escritura para el usuario del servidor web).
+* Permisos del directorio `app/views/fotos/` (permiso de escritura para el usuario del servidor web).
 * Límite de tamaño en `php.ini` (`upload_max_filesize`, `post_max_size`).
 
 **Solución:**
 
-* `chown -R www-data:www-data uploads/` (ajustar usuario según SO).
+* `chown -R www-data:www-data app/views/fotos/` (ajustar usuario según SO).
 * Aumentar `upload_max_filesize` y `post_max_size` si es necesario y reiniciar PHP-FPM/Apache.
 
 ---
@@ -382,7 +382,7 @@ Cuando algo no funciona, ir paso a paso: reproducir, revisar logs, aislar la cap
 
 **Verificar:**
 
-* Que los archivos CSS/JS de Bootstrap y los iconos estén en `assets/` y cargados con la ruta correcta.
+* Que los archivos CSS/JS de Bootstrap y los iconos estén en `app/views/` y cargados con la ruta correcta.
 * Revisar consola (red) para 404 en los assets.
 
 **Solución:**
@@ -414,16 +414,6 @@ sudo journalctl -u php8.1-fpm -f
 ## Contacto y seguimiento
 
 * Para problemas que no resolvás con esta guía: abrir issue en el repositorio con pasos para reproducir, logs (error.log, console) y capturas.
-
----
-
-# Resumen de commits relevantes (resumen rápido)
-
-* **2025-10-27**: Estructura inicial (MVC + AJAX).
-* **Oct 29–Nov 2**: Añadidos modelos, vistas y controladores para clientes y productos; utilidades y assets (Bootstrap, SweetAlert2).
-* **Nov 3–Nov 12**: CRUD y vistas para facturas; funciones para creación y edición de facturas.
-* **Nov 14**: Implementación de método para crear PDFs con los datos de facturas.
-* **Nov 16**: Corrección en `Ajax.js` para notificaciones y limpieza de formulario al registrar datos (fix UX).
 
 ---
 

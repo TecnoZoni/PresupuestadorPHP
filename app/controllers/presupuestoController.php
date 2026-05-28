@@ -6,14 +6,14 @@ use app\models\mainModel;
 
 use app\library\fpdf\FPDF;
 
-class invoiceController extends mainModel
+class presupuestoController extends mainModel
 {
 
-    public function registrarFacturaControlador()
+    public function registrarPresupuestoControlador()
     {
 
         $cliente_id = $this->limpiarCadena($_POST['cliente_id'] ?? '');
-        $factura_total = 0;
+        $presupuesto_total = 0;
 
         $ids   = $_POST['producto_id'] ?? [];
         $codigos   = $_POST['producto_codigo'] ?? [];
@@ -40,7 +40,7 @@ class invoiceController extends mainModel
                     'subtotal' => $precio * $cantidad
                 ];
             }
-            $factura_total += $precio * $cantidad;
+            $presupuesto_total += $precio * $cantidad;
         }
 
         if ($cliente_id == "" || empty($ids) || empty($codigos) || empty($nombres) || empty($precios) || empty($cantidades)) {
@@ -64,32 +64,32 @@ class invoiceController extends mainModel
             return json_encode($alerta);
         }
 
-        $factura_datos_reg = [
+        $presupuesto_datos_reg = [
             [
                 "campo_nombre" => "cliente_id",
                 "campo_marcador" => ":Cliente_id",
                 "campo_valor" => $cliente_id
             ],
             [
-                "campo_nombre" => "factura_total",
-                "campo_marcador" => ":Factura_total",
-                "campo_valor" => $factura_total
+                "campo_nombre" => "presupuesto_total",
+                "campo_marcador" => ":Presupuesto_total",
+                "campo_valor" => $presupuesto_total
             ],
             [
-                "campo_nombre" => "factura_fecha",
-                "campo_marcador" => ":Factura_fecha",
+                "campo_nombre" => "presupuesto_fecha",
+                "campo_marcador" => ":Presupuesto_fecha",
                 "campo_valor" => date("Y-m-d H:i:s")
             ]
         ];
 
-        $registrar_factura = $this->guardarDatos("factura", $factura_datos_reg);
-        $factura_id = $registrar_factura['id'];
+        $registrar_presupuesto = $this->guardarDatos("presupuesto", $presupuesto_datos_reg);
+        $presupuesto_id = $registrar_presupuesto['id'];
 
-        if (!is_numeric($factura_id) || $factura_id <= 0) {
+        if (!is_numeric($presupuesto_id) || $presupuesto_id <= 0) {
             $alerta = [
                 "tipo" => "simple",
                 "titulo" => "Error al guardar",
-                "texto" => "No se pudo obtener el ID de la factura",
+                "texto" => "No se pudo obtener el ID del presupuesto",
                 "icono" => "error"
             ];
             return json_encode($alerta);
@@ -98,11 +98,11 @@ class invoiceController extends mainModel
         $detalles_guardados = 0;
 
         foreach ($productos as $producto) {
-            $detalle_factura_datos_reg = [
+            $detalle_presupuesto_datos_reg = [
                 [
-                    "campo_nombre" => "factura_id",
-                    "campo_marcador" => ":Factura_id",
-                    "campo_valor" => $factura_id
+                    "campo_nombre" => "presupuesto_id",
+                    "campo_marcador" => ":Presupuesto_id",
+                    "campo_valor" => $presupuesto_id
                 ],
                 [
                     "campo_nombre" => "producto_id",
@@ -110,34 +110,34 @@ class invoiceController extends mainModel
                     "campo_valor" => $producto['id']
                 ],
                 [
-                    "campo_nombre" => "detalle_factura_cantidad",
-                    "campo_marcador" => ":Detalle_factura_cantidad",
+                    "campo_nombre" => "detalle_presupuesto_cantidad",
+                    "campo_marcador" => ":Detalle_presupuesto_cantidad",
                     "campo_valor" => $producto['cantidad']
                 ],
                 [
-                    "campo_nombre" => "detalle_factura_precio_unitario",
-                    "campo_marcador" => ":Detalle_factura_precio_unitario",
+                    "campo_nombre" => "detalle_presupuesto_precio_unitario",
+                    "campo_marcador" => ":Detalle_presupuesto_precio_unitario",
                     "campo_valor" => $producto['precio']
                 ],
                 [
-                    "campo_nombre" => "detalle_factura_subtotal",
-                    "campo_marcador" => ":Detalle_factura_subtotal",
+                    "campo_nombre" => "detalle_presupuesto_subtotal",
+                    "campo_marcador" => ":Detalle_presupuesto_subtotal",
                     "campo_valor" => $producto['subtotal']
                 ],
             ];
 
-            $registrar_detalle_factura = $this->guardarDatos("detalle_factura", $detalle_factura_datos_reg);
-            if ($registrar_detalle_factura['stmt']->rowCount() == 1) {
+            $registrar_detalle_presupuesto = $this->guardarDatos("detalle_presupuesto", $detalle_presupuesto_datos_reg);
+            if ($registrar_detalle_presupuesto['stmt']->rowCount() == 1) {
                 $detalles_guardados++;
             }
         };
 
 
-        if ($registrar_factura['stmt']->rowCount() == 1 && $detalles_guardados == count($productos)) {
+        if ($registrar_presupuesto['stmt']->rowCount() == 1 && $detalles_guardados == count($productos)) {
             $alerta = [
                 "tipo" => "limpiar",
-                "titulo" => "Factura registrada",
-                "texto" => "La factura se registro con exito",
+                "titulo" => "Presupuesto registrado",
+                "texto" => "El presupuesto se registro con exito",
                 "icono" => "success"
             ];
         } else {
@@ -145,7 +145,7 @@ class invoiceController extends mainModel
             $alerta = [
                 "tipo" => "simple",
                 "titulo" => "Ocurrió un error inesperado",
-                "texto" => "No se pudo registrar la factura, por favor intente nuevamente",
+                "texto" => "No se pudo registrar el presupuesto, por favor intente nuevamente",
                 "icono" => "error"
             ];
         }
@@ -153,7 +153,7 @@ class invoiceController extends mainModel
         return json_encode($alerta);
     }
 
-    public function listarFacturaControlador($pagina, $registros, $url, $busqueda)
+    public function listarPresupuestoControlador($pagina, $registros, $url, $busqueda)
     {
 
         $pagina = $this->limpiarCadena($pagina);
@@ -170,59 +170,59 @@ class invoiceController extends mainModel
 
         if (isset($busqueda) && $busqueda != "") {
 
-            $consulta_datos = "SELECT 
-                                    f.factura_id,
-                                    f.factura_fecha,
-                                    f.factura_total,
+            $consulta_datos = "SELECT
+                                    f.presupuesto_id,
+                                    f.presupuesto_fecha,
+                                    f.presupuesto_total,
                                     c.cliente_id,
                                     c.cliente_nombre,
                                     c.cliente_apellido,
                                     c.cliente_telefono,
                                     c.cliente_email
-                                FROM factura f
+                                FROM presupuesto f
                                 INNER JOIN cliente c ON f.cliente_id = c.cliente_id
                                 WHERE (
-                                    c.cliente_nombre LIKE '%$busqueda%' 
-                                    OR c.cliente_apellido LIKE '%$busqueda%' 
-                                    OR c.cliente_email LIKE '%$busqueda%' 
-                                    OR c.cliente_telefono LIKE '%$busqueda%' 
-                                    OR f.factura_id LIKE '%$busqueda%' 
-                                    OR f.factura_fecha LIKE '%$busqueda%'
+                                    c.cliente_nombre LIKE '%$busqueda%'
+                                    OR c.cliente_apellido LIKE '%$busqueda%'
+                                    OR c.cliente_email LIKE '%$busqueda%'
+                                    OR c.cliente_telefono LIKE '%$busqueda%'
+                                    OR f.presupuesto_id LIKE '%$busqueda%'
+                                    OR f.presupuesto_fecha LIKE '%$busqueda%'
                                 )
-                                ORDER BY f.factura_id DESC
+                                ORDER BY f.presupuesto_id DESC
                                 LIMIT $inicio,$registros
                             ";
 
 
-            $consulta_total = "SELECT COUNT(f.factura_id)
-                                FROM factura f
+            $consulta_total = "SELECT COUNT(f.presupuesto_id)
+                                FROM presupuesto f
                                 INNER JOIN cliente c ON f.cliente_id = c.cliente_id
                                 WHERE (
-                                    c.cliente_nombre LIKE '%$busqueda%' 
-                                    OR c.cliente_apellido LIKE '%$busqueda%' 
-                                    OR c.cliente_email LIKE '%$busqueda%' 
-                                    OR c.cliente_telefono LIKE '%$busqueda%' 
-                                    OR f.factura_id LIKE '%$busqueda%' 
-                                    OR f.factura_fecha LIKE '%$busqueda%'
+                                    c.cliente_nombre LIKE '%$busqueda%'
+                                    OR c.cliente_apellido LIKE '%$busqueda%'
+                                    OR c.cliente_email LIKE '%$busqueda%'
+                                    OR c.cliente_telefono LIKE '%$busqueda%'
+                                    OR f.presupuesto_id LIKE '%$busqueda%'
+                                    OR f.presupuesto_fecha LIKE '%$busqueda%'
                                 )";
         } else {
 
-            $consulta_datos = "SELECT 
-                                    f.factura_id,
-                                    f.factura_fecha,
-                                    f.factura_total,
+            $consulta_datos = "SELECT
+                                    f.presupuesto_id,
+                                    f.presupuesto_fecha,
+                                    f.presupuesto_total,
                                     c.cliente_id,
                                     c.cliente_nombre,
                                     c.cliente_apellido,
                                     c.cliente_telefono,
                                     c.cliente_email
-                                FROM factura f
-                                INNER JOIN cliente c 
+                                FROM presupuesto f
+                                INNER JOIN cliente c
                                     ON f.cliente_id = c.cliente_id
-                                ORDER BY f.factura_id DESC                                
+                                ORDER BY f.presupuesto_id DESC
                                 LIMIT $inicio,$registros";
 
-            $consulta_total = "SELECT COUNT(f.factura_id) FROM factura f INNER JOIN cliente c ON f.cliente_id = c.cliente_id;";
+            $consulta_total = "SELECT COUNT(f.presupuesto_id) FROM presupuesto f INNER JOIN cliente c ON f.cliente_id = c.cliente_id;";
         }
 
         $datos = $this->ejecutarConsulta($consulta_datos);
@@ -238,7 +238,7 @@ class invoiceController extends mainModel
     <table class="table table-bordered table-hover align-middle text-center">
         <thead class="table-dark">
             <tr>
-                <th>#Numero de Factura</th>
+                <th>#Numero de Presupuesto</th>
                 <th>Fecha</th>
                 <th>Cliente</th>
                 <th>Teléfono</th>
@@ -255,25 +255,25 @@ class invoiceController extends mainModel
             foreach ($datos as $rows) {
                 $tabla .= '
             <tr>
-                <td>' . $rows['factura_id'] . '</td>
-                <td>' . $rows['factura_fecha'] . '</td>
+                <td>' . $rows['presupuesto_id'] . '</td>
+                <td>' . $rows['presupuesto_fecha'] . '</td>
                 <td>' . $rows['cliente_nombre'] . ' ' . $rows['cliente_apellido'] . '</td>
                 <td>' . $rows['cliente_telefono'] . '</td>
-                <td>' . $rows['factura_total'] . '</td>
+                <td>' . $rows['presupuesto_total'] . '</td>
                 <td>
-                    <a href="' . APP_URL . 'invoiceUpdate/' . $rows['factura_id'] . '/" class="btn btn-success btn-sm">Actualizar</a>
+                    <a href="' . APP_URL . 'presupuestoUpdate/' . $rows['presupuesto_id'] . '/" class="btn btn-success btn-sm">Actualizar</a>
                 </td>
                 <td>
-                    <form class="FormularioAjax" action="' . APP_URL . 'app/ajax/facturaAjax.php" method="POST" autocomplete="off">
-                        <input type="hidden" name="modulo_factura" value="eliminar">
-                        <input type="hidden" name="factura_id" value="' . $rows['factura_id'] . '">
+                    <form class="FormularioAjax" action="' . APP_URL . 'app/ajax/presupuestoAjax.php" method="POST" autocomplete="off">
+                        <input type="hidden" name="modulo_presupuesto" value="eliminar">
+                        <input type="hidden" name="presupuesto_id" value="' . $rows['presupuesto_id'] . '">
                         <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
                     </form>
                 </td>
                 <td>
-                    <form class="" action="' . APP_URL . 'app/ajax/facturaAjax.php" method="POST" autocomplete="off" target="_blank">
-                        <input type="hidden" name="modulo_factura" value="generarPDF">
-                        <input type="hidden" name="factura_id" value="' . $rows['factura_id'] . '">
+                    <form class="" action="' . APP_URL . 'app/ajax/presupuestoAjax.php" method="POST" autocomplete="off" target="_blank">
+                        <input type="hidden" name="modulo_presupuesto" value="generarPDF">
+                        <input type="hidden" name="presupuesto_id" value="' . $rows['presupuesto_id'] . '">
                         <button type="submit" class="btn btn-outline-danger btn-sm">Generar PDF</button>
                     </form>
                 </td>
@@ -305,24 +305,24 @@ class invoiceController extends mainModel
         $tabla .= '</tbody></table></div>';
 
         if ($total > 0 && $pagina <= $numeroPaginas) {
-            $tabla .= '<p class="text-end">Mostrando facturas <strong>' . $pag_inicio . '</strong> al <strong>' . $pag_final . '</strong> de un <strong>total de ' . $total . '</strong></p>';
+            $tabla .= '<p class="text-end">Mostrando presupuestos <strong>' . $pag_inicio . '</strong> al <strong>' . $pag_final . '</strong> de un <strong>total de ' . $total . '</strong></p>';
             $tabla .= $this->paginadorTablas($pagina, $numeroPaginas, $url, 7);
         }
 
         return $tabla;
     }
 
-    public function eliminarFacturaControlador()
+    public function eliminarPresupuestoControlador()
     {
 
-        $id = $this->limpiarCadena($_POST['factura_id']);
+        $id = $this->limpiarCadena($_POST['presupuesto_id']);
 
-        $datos = $this->ejecutarConsulta("SELECT * FROM factura WHERE factura_id='$id'");
+        $datos = $this->ejecutarConsulta("SELECT * FROM presupuesto WHERE presupuesto_id='$id'");
         if ($datos->rowCount() <= 0) {
             $alerta = [
                 "tipo" => "simple",
                 "titulo" => "Ocurrió un error inesperado",
-                "texto" => "No hemos encontrado la factura en el sistema",
+                "texto" => "No hemos encontrado el presupuesto en el sistema",
                 "icono" => "error"
             ];
             return json_encode($alerta);
@@ -330,25 +330,25 @@ class invoiceController extends mainModel
             $datos = $datos->fetch();
         }
 
-        $eliminarDetalleFactura = $this->eliminarRegistro("detalle_factura", "factura_id", $id);
+        $eliminarDetallePresupuesto = $this->eliminarRegistro("detalle_presupuesto", "presupuesto_id", $id);
 
-        if ($eliminarDetalleFactura->rowCount() >= 1) {
+        if ($eliminarDetallePresupuesto->rowCount() >= 1) {
 
 
-            $eliminarFactura = $this->eliminarRegistro("factura", "factura_id", $id);
+            $eliminarPresupuesto = $this->eliminarRegistro("presupuesto", "presupuesto_id", $id);
 
-            if ($eliminarFactura->rowCount() == 1) {
+            if ($eliminarPresupuesto->rowCount() == 1) {
                 $alerta = [
                     "tipo" => "recargar",
-                    "titulo" => "Factura eliminada",
-                    "texto" => "La factura N°" . $datos['factura_id'] . " ha sido eliminado del sistema correctamente",
+                    "titulo" => "Presupuesto eliminado",
+                    "texto" => "El presupuesto N°" . $datos['presupuesto_id'] . " ha sido eliminado del sistema correctamente",
                     "icono" => "success"
                 ];
             } else {
                 $alerta = [
                     "tipo" => "simple",
                     "titulo" => "Ocurrió un error inesperado",
-                    "texto" => "No hemos podido eliminar la factura N°" . $datos['factura_id'] . " del sistema, por favor intente nuevamente",
+                    "texto" => "No hemos podido eliminar el presupuesto N°" . $datos['presupuesto_id'] . " del sistema, por favor intente nuevamente",
                     "icono" => "error"
                 ];
             }
@@ -356,7 +356,7 @@ class invoiceController extends mainModel
             $alerta = [
                 "tipo" => "simple",
                 "titulo" => "Ocurrió un error inesperado",
-                "texto" => "No hemos podido eliminar la factura N°" . $datos['factura_id'] . " del sistema, por favor intente nuevamente",
+                "texto" => "No hemos podido eliminar el presupuesto N°" . $datos['presupuesto_id'] . " del sistema, por favor intente nuevamente",
                 "icono" => "error"
             ];
         }
@@ -364,17 +364,17 @@ class invoiceController extends mainModel
         return json_encode($alerta);
     }
 
-    public function actualizarFacturaControlador()
+    public function actualizarPresupuestoControlador()
     {
 
-        $id = $this->limpiarCadena($_POST['factura_id']);
+        $id = $this->limpiarCadena($_POST['presupuesto_id']);
 
-        $datos = $this->ejecutarConsulta("SELECT * FROM factura WHERE factura_id='$id'");
+        $datos = $this->ejecutarConsulta("SELECT * FROM presupuesto WHERE presupuesto_id='$id'");
         if ($datos->rowCount() <= 0) {
             $alerta = [
                 "tipo" => "simple",
                 "titulo" => "Ocurrió un error inesperado",
-                "texto" => "No hemos encontrado la factura en el sistema",
+                "texto" => "No hemos encontrado el presupuesto en el sistema",
                 "icono" => "error"
             ];
             return json_encode($alerta);
@@ -383,7 +383,7 @@ class invoiceController extends mainModel
         }
 
         $cliente_id = $this->limpiarCadena($_POST['cliente_id'] ?? '');
-        $factura_total = 0;
+        $presupuesto_total = 0;
 
         $ids   = $_POST['producto_id'] ?? [];
         $codigos   = $_POST['producto_codigo'] ?? [];
@@ -410,7 +410,7 @@ class invoiceController extends mainModel
                     'subtotal' => $precio * $cantidad
                 ];
             }
-            $factura_total += $precio * $cantidad;
+            $presupuesto_total += $precio * $cantidad;
         }
 
         if ($cliente_id == "" || empty($ids) || empty($codigos) || empty($nombres) || empty($precios) || empty($cantidades)) {
@@ -434,40 +434,40 @@ class invoiceController extends mainModel
             return json_encode($alerta);
         }
 
-        $factura_datos_up = [
+        $presupuesto_datos_up = [
             [
                 "campo_nombre" => "cliente_id",
                 "campo_marcador" => ":Cliente_id",
                 "campo_valor" => $cliente_id
             ],
             [
-                "campo_nombre" => "factura_total",
-                "campo_marcador" => ":Factura_total",
-                "campo_valor" => $factura_total
+                "campo_nombre" => "presupuesto_total",
+                "campo_marcador" => ":Presupuesto_total",
+                "campo_valor" => $presupuesto_total
             ],
             [
-                "campo_nombre" => "factura_fecha",
-                "campo_marcador" => ":Factura_fecha",
+                "campo_nombre" => "presupuesto_fecha",
+                "campo_marcador" => ":Presupuesto_fecha",
                 "campo_valor" => date("Y-m-d H:i:s")
             ]
         ];
 
 
         $condicion = [
-            "condicion_campo" => "factura_id",
+            "condicion_campo" => "presupuesto_id",
             "condicion_marcador" => ":ID",
             "condicion_valor" => $id
         ];
 
-        $actualizar_factura = $this->actualizarDatos("factura", $factura_datos_up, $condicion);
+        $actualizar_presupuesto = $this->actualizarDatos("presupuesto", $presupuesto_datos_up, $condicion);
 
-        $factura_id = $id;
+        $presupuesto_id = $id;
 
-        if (!is_numeric($factura_id) || $factura_id <= 0) {
+        if (!is_numeric($presupuesto_id) || $presupuesto_id <= 0) {
             $alerta = [
                 "tipo" => "simple",
                 "titulo" => "Error al guardar",
-                "texto" => "No se pudo obtener el ID de la factura",
+                "texto" => "No se pudo obtener el ID del presupuesto",
                 "icono" => "error"
             ];
             return json_encode($alerta);
@@ -475,14 +475,14 @@ class invoiceController extends mainModel
 
         $detalles_actualizados = 0;
 
-        $this->eliminarRegistro("detalle_factura", "factura_id", $id);
+        $this->eliminarRegistro("detalle_presupuesto", "presupuesto_id", $id);
 
         foreach ($productos as $producto) {
-            $detalle_factura_datos_up = [
+            $detalle_presupuesto_datos_up = [
                 [
-                    "campo_nombre" => "factura_id",
-                    "campo_marcador" => ":Factura_id",
-                    "campo_valor" => $factura_id
+                    "campo_nombre" => "presupuesto_id",
+                    "campo_marcador" => ":Presupuesto_id",
+                    "campo_valor" => $presupuesto_id
                 ],
                 [
                     "campo_nombre" => "producto_id",
@@ -490,41 +490,41 @@ class invoiceController extends mainModel
                     "campo_valor" => $producto['id']
                 ],
                 [
-                    "campo_nombre" => "detalle_factura_cantidad",
-                    "campo_marcador" => ":Detalle_factura_cantidad",
+                    "campo_nombre" => "detalle_presupuesto_cantidad",
+                    "campo_marcador" => ":Detalle_presupuesto_cantidad",
                     "campo_valor" => $producto['cantidad']
                 ],
                 [
-                    "campo_nombre" => "detalle_factura_precio_unitario",
-                    "campo_marcador" => ":Detalle_factura_precio_unitario",
+                    "campo_nombre" => "detalle_presupuesto_precio_unitario",
+                    "campo_marcador" => ":Detalle_presupuesto_precio_unitario",
                     "campo_valor" => $producto['precio']
                 ],
                 [
-                    "campo_nombre" => "detalle_factura_subtotal",
-                    "campo_marcador" => ":Detalle_factura_subtotal",
+                    "campo_nombre" => "detalle_presupuesto_subtotal",
+                    "campo_marcador" => ":Detalle_presupuesto_subtotal",
                     "campo_valor" => $producto['subtotal']
                 ],
             ];
 
 
             $condicion = [
-                "condicion_campo" => "detalle_factura_id",
+                "condicion_campo" => "detalle_presupuesto_id",
                 "condicion_marcador" => ":ID",
                 "condicion_valor" => $id
             ];
 
-            $actualizar_detalle_factura = $this->guardarDatos("detalle_factura", $detalle_factura_datos_up);
-            if ($actualizar_detalle_factura["stmt"]->rowCount() == 1) {
+            $actualizar_detalle_presupuesto = $this->guardarDatos("detalle_presupuesto", $detalle_presupuesto_datos_up);
+            if ($actualizar_detalle_presupuesto["stmt"]->rowCount() == 1) {
                 $detalles_actualizados++;
             }
         };
 
 
-        if ($actualizar_factura->rowCount() == 1 && $detalles_actualizados == count($productos)) {
+        if ($actualizar_presupuesto->rowCount() == 1 && $detalles_actualizados == count($productos)) {
             $alerta = [
                 "tipo" => "recargar",
-                "titulo" => "Factura actualizada",
-                "texto" => "La factura se actualizo con exito",
+                "titulo" => "Presupuesto actualizado",
+                "texto" => "El presupuesto se actualizo con exito",
                 "icono" => "success"
             ];
         } else {
@@ -532,7 +532,7 @@ class invoiceController extends mainModel
             $alerta = [
                 "tipo" => "simple",
                 "titulo" => "Ocurrió un error inesperado",
-                "texto" => "No se pudo actualizar la factura, por favor intente nuevamente",
+                "texto" => "No se pudo actualizar el presupuesto, por favor intente nuevamente",
                 "icono" => "error"
             ];
         }
@@ -540,7 +540,7 @@ class invoiceController extends mainModel
         return json_encode($alerta);
     }
 
-    public function generarFacturaControlador()
+    public function generarPresupuestoControlador()
     {
 
         $datosNegocio = $this->ejecutarConsulta("SELECT * FROM configuracion where configuracion_id= 1");
@@ -556,41 +556,41 @@ class invoiceController extends mainModel
             $datosNegocio = $datosNegocio->fetch();
         }
 
-        $id = $this->limpiarCadena($_POST['factura_id']);
+        $id = $this->limpiarCadena($_POST['presupuesto_id']);
 
-        $checkFactura = $this->ejecutarConsulta("SELECT * FROM factura WHERE factura_id='$id'");
-        if ($checkFactura->rowCount() <= 0) {
+        $checkPresupuesto = $this->ejecutarConsulta("SELECT * FROM presupuesto WHERE presupuesto_id='$id'");
+        if ($checkPresupuesto->rowCount() <= 0) {
             $alerta = [
                 "tipo" => "simple",
                 "titulo" => "Ocurrió un error inesperado",
-                "texto" => "No hemos encontrado la factura en el sistema",
+                "texto" => "No hemos encontrado el presupuesto en el sistema",
                 "icono" => "error"
             ];
             return json_encode($alerta);
         }
 
-        $sql = "SELECT f.factura_id, f.cliente_id, f.factura_fecha, f.factura_total,
-               d.detalle_factura_id, d.producto_id, d.detalle_factura_cantidad,
-               d.detalle_factura_precio_unitario, d.detalle_factura_subtotal,
+        $sql = "SELECT f.presupuesto_id, f.cliente_id, f.presupuesto_fecha, f.presupuesto_total,
+               d.detalle_presupuesto_id, d.producto_id, d.detalle_presupuesto_cantidad,
+               d.detalle_presupuesto_precio_unitario, d.detalle_presupuesto_subtotal,
                p.producto_codigo, p.producto_nombre, p.producto_precio, p.producto_descripcion,
                c.cliente_nombre, c.cliente_apellido, c.cliente_telefono, c.cliente_email
-        FROM factura f
-        INNER JOIN detalle_factura d ON f.factura_id = d.factura_id
+        FROM presupuesto f
+        INNER JOIN detalle_presupuesto d ON f.presupuesto_id = d.presupuesto_id
         INNER JOIN producto p ON d.producto_id = p.producto_id
         INNER JOIN cliente c ON f.cliente_id = c.cliente_id
-        WHERE f.factura_id = $id;";
+        WHERE f.presupuesto_id = $id;";
 
-        $datosFactura = $this->ejecutarConsulta($sql);
-        if ($datosFactura->rowCount() <= 0) {
+        $datosPresupuesto = $this->ejecutarConsulta($sql);
+        if ($datosPresupuesto->rowCount() <= 0) {
             $alerta = [
                 "tipo" => "simple",
                 "titulo" => "Ocurrió un error inesperado",
-                "texto" => "No hemos encontrado los detalles de la factura en el sistema",
+                "texto" => "No hemos encontrado los detalles del presupuesto en el sistema",
                 "icono" => "error"
             ];
             return json_encode($alerta);
         } else {
-            $datosFactura = $datosFactura->fetchAll();
+            $datosPresupuesto = $datosPresupuesto->fetchAll();
         }
 
         function convertirUTF8($texto)
@@ -624,7 +624,7 @@ class invoiceController extends mainModel
         $pdf->SetXY(130, 40);
         $pdf->Cell(70, 5, convertirUTF8("Dirección: " . $datosNegocio['configuracion_direccion']), 0, 1, 'L');
 
-        $datosFacturaGeneral = $datosFactura[0];
+        $datosPresupuestoGeneral = $datosPresupuesto[0];
 
         // Datos del cliente
         $pdf->SetXY(10, 60);
@@ -632,15 +632,15 @@ class invoiceController extends mainModel
         $pdf->Cell(0, 6, "Datos del cliente", 0, 1);
 
         $pdf->SetFont('Arial', '', 12);
-        $pdf->Cell(0, 6, convertirUTF8("Nombre: " . $datosFacturaGeneral['cliente_nombre'] . " " . $datosFacturaGeneral['cliente_apellido']), 0, 1);
-        $pdf->Cell(0, 6, convertirUTF8("Teléfono: " . $datosFacturaGeneral['cliente_telefono']), 0, 1);
-        $pdf->Cell(0, 6, convertirUTF8("Email: " . $datosFacturaGeneral['cliente_email']), 0, 1);
+        $pdf->Cell(0, 6, convertirUTF8("Nombre: " . $datosPresupuestoGeneral['cliente_nombre'] . " " . $datosPresupuestoGeneral['cliente_apellido']), 0, 1);
+        $pdf->Cell(0, 6, convertirUTF8("Teléfono: " . $datosPresupuestoGeneral['cliente_telefono']), 0, 1);
+        $pdf->Cell(0, 6, convertirUTF8("Email: " . $datosPresupuestoGeneral['cliente_email']), 0, 1);
 
-        // Número y fecha de factura
+        // Número y fecha del presupuesto
         $pdf->Ln(5);
         $pdf->SetFont('Arial', 'B', 12);
-        $pdf->Cell(0, 6, convertirUTF8("Factura N° ") . $datosFacturaGeneral['factura_id'], 0, 1);
-        $pdf->Cell(0, 6, "Fecha: " . $datosFacturaGeneral['factura_fecha'], 0, 1);
+        $pdf->Cell(0, 6, convertirUTF8("Presupuesto N° ") . $datosPresupuestoGeneral['presupuesto_id'], 0, 1);
+        $pdf->Cell(0, 6, "Fecha: " . $datosPresupuestoGeneral['presupuesto_fecha'], 0, 1);
 
         // Tabla de productos
         $pdf->Ln(5);
@@ -653,22 +653,22 @@ class invoiceController extends mainModel
 
         $pdf->SetFont('Arial', '', 11);
 
-        foreach ($datosFactura as $row) {
+        foreach ($datosPresupuesto as $row) {
             $pdf->Cell(40, 6, convertirUTF8($row['producto_codigo']), 1);
             $pdf->Cell(60, 6, convertirUTF8($row['producto_nombre']), 1);
-            $pdf->Cell(20, 6, $row['detalle_factura_cantidad'], 1, 0, 'C');
-            $pdf->Cell(35, 6, number_format($row['detalle_factura_precio_unitario'], 2), 1, 0, 'R');
-            $pdf->Cell(35, 6, number_format($row['detalle_factura_subtotal'], 2), 1, 1, 'R');
+            $pdf->Cell(20, 6, $row['detalle_presupuesto_cantidad'], 1, 0, 'C');
+            $pdf->Cell(35, 6, number_format($row['detalle_presupuesto_precio_unitario'], 2), 1, 0, 'R');
+            $pdf->Cell(35, 6, number_format($row['detalle_presupuesto_subtotal'], 2), 1, 1, 'R');
         }
 
         // Total
         $pdf->Ln(5);
         $pdf->SetFont('Arial', 'B', 12);
         $pdf->Cell(155, 7, 'Total', 1);
-        $pdf->Cell(35, 7, '$' . number_format($datosFacturaGeneral['factura_total'], 2), 1, 1, 'R');
+        $pdf->Cell(35, 7, '$' . number_format($datosPresupuestoGeneral['presupuesto_total'], 2), 1, 1, 'R');
 
         header('Content-Type: application/pdf');
-        header('Content-Disposition: inline; filename="factura_' . $id . '.pdf"');
+        header('Content-Disposition: inline; filename="presupuesto_' . $id . '.pdf"');
 
         $pdf->Output('I'); // 'I' = inline, lo abre en el navegador
         exit;

@@ -1,9 +1,7 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Servidor: 127.0.0.1
--- Tiempo de generación: 18-11-2025 a las 22:16:09
+-- Base de datos para PresupuestadorPHP
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.0.30
 
@@ -18,10 +16,10 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de datos: `facturador`
+-- Base de datos: `presupuestador`
 --
-CREATE DATABASE IF NOT EXISTS `facturador` DEFAULT CHARACTER SET utf8 COLLATE utf8_spanish_ci;
-USE `facturador`;
+CREATE DATABASE IF NOT EXISTS `presupuestador` DEFAULT CHARACTER SET utf8 COLLATE utf8_spanish_ci;
+USE `presupuestador`;
 
 -- --------------------------------------------------------
 
@@ -57,29 +55,29 @@ CREATE TABLE `configuracion` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `detalle_factura`
+-- Estructura de tabla para la tabla `detalle_presupuesto`
 --
 
-CREATE TABLE `detalle_factura` (
-  `detalle_factura_id` int(11) NOT NULL,
-  `factura_id` int(11) DEFAULT NULL,
+CREATE TABLE `detalle_presupuesto` (
+  `detalle_presupuesto_id` int(11) NOT NULL,
+  `presupuesto_id` int(11) DEFAULT NULL,
   `producto_id` int(11) DEFAULT NULL,
-  `detalle_factura_cantidad` int(11) DEFAULT NULL,
-  `detalle_factura_precio_unitario` decimal(10,2) DEFAULT NULL,
-  `detalle_factura_subtotal` decimal(10,2) DEFAULT NULL
+  `detalle_presupuesto_cantidad` int(11) DEFAULT NULL,
+  `detalle_presupuesto_precio_unitario` decimal(10,2) DEFAULT NULL,
+  `detalle_presupuesto_subtotal` decimal(10,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `factura`
+-- Estructura de tabla para la tabla `presupuesto`
 --
 
-CREATE TABLE `factura` (
-  `factura_id` int(11) NOT NULL,
+CREATE TABLE `presupuesto` (
+  `presupuesto_id` int(11) NOT NULL,
   `cliente_id` int(11) DEFAULT NULL,
-  `factura_fecha` datetime DEFAULT current_timestamp(),
-  `factura_total` decimal(10,2) DEFAULT NULL
+  `presupuesto_fecha` datetime DEFAULT current_timestamp(),
+  `presupuesto_total` decimal(10,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 -- --------------------------------------------------------
@@ -113,18 +111,18 @@ ALTER TABLE `configuracion`
   ADD PRIMARY KEY (`configuracion_id`);
 
 --
--- Indices de la tabla `detalle_factura`
+-- Indices de la tabla `detalle_presupuesto`
 --
-ALTER TABLE `detalle_factura`
-  ADD PRIMARY KEY (`detalle_factura_id`),
-  ADD KEY `factura_id` (`factura_id`),
+ALTER TABLE `detalle_presupuesto`
+  ADD PRIMARY KEY (`detalle_presupuesto_id`),
+  ADD KEY `presupuesto_id` (`presupuesto_id`),
   ADD KEY `producto_id` (`producto_id`);
 
 --
--- Indices de la tabla `factura`
+-- Indices de la tabla `presupuesto`
 --
-ALTER TABLE `factura`
-  ADD PRIMARY KEY (`factura_id`),
+ALTER TABLE `presupuesto`
+  ADD PRIMARY KEY (`presupuesto_id`),
   ADD KEY `cliente_id` (`cliente_id`);
 
 --
@@ -151,16 +149,16 @@ ALTER TABLE `configuracion`
   MODIFY `configuracion_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `detalle_factura`
+-- AUTO_INCREMENT de la tabla `detalle_presupuesto`
 --
-ALTER TABLE `detalle_factura`
-  MODIFY `detalle_factura_id` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `detalle_presupuesto`
+  MODIFY `detalle_presupuesto_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `factura`
+-- AUTO_INCREMENT de la tabla `presupuesto`
 --
-ALTER TABLE `factura`
-  MODIFY `factura_id` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `presupuesto`
+  MODIFY `presupuesto_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `producto`
@@ -173,17 +171,17 @@ ALTER TABLE `producto`
 --
 
 --
--- Filtros para la tabla `detalle_factura`
+-- Filtros para la tabla `detalle_presupuesto`
 --
-ALTER TABLE `detalle_factura`
-  ADD CONSTRAINT `detalle_factura_ibfk_1` FOREIGN KEY (`factura_id`) REFERENCES `factura` (`factura_id`),
-  ADD CONSTRAINT `detalle_factura_ibfk_2` FOREIGN KEY (`producto_id`) REFERENCES `producto` (`producto_id`);
+ALTER TABLE `detalle_presupuesto`
+  ADD CONSTRAINT `detalle_presupuesto_ibfk_1` FOREIGN KEY (`presupuesto_id`) REFERENCES `presupuesto` (`presupuesto_id`),
+  ADD CONSTRAINT `detalle_presupuesto_ibfk_2` FOREIGN KEY (`producto_id`) REFERENCES `producto` (`producto_id`);
 
 --
--- Filtros para la tabla `factura`
+-- Filtros para la tabla `presupuesto`
 --
-ALTER TABLE `factura`
-  ADD CONSTRAINT `factura_ibfk_1` FOREIGN KEY (`cliente_id`) REFERENCES `cliente` (`cliente_id`);
+ALTER TABLE `presupuesto`
+  ADD CONSTRAINT `presupuesto_ibfk_1` FOREIGN KEY (`cliente_id`) REFERENCES `cliente` (`cliente_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

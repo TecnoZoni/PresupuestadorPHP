@@ -1,24 +1,24 @@
 <?php
 $id = $insMain->limpiarCadena($url[1]);
-$datos_factura = $insMain->seleccionarDatos("Unico", "factura", "factura_id", $id);
-$datos_detalle_factura = $insMain->seleccionarDatos("Todos", "detalle_factura", "factura_id", $id);
+$datos_presupuesto = $insMain->seleccionarDatos("Unico", "presupuesto", "presupuesto_id", $id);
+$datos_detalle_presupuesto = $insMain->seleccionarDatos("Todos", "detalle_presupuesto", "presupuesto_id", $id);
 ?>
 
 <div class="container-fluid mb-4">
-    <h1 class="h3">Factura</h1>
-    <h2 class="h5 text-muted">Actualizar factura</h2>
+    <h1 class="h3">Presupuesto</h1>
+    <h2 class="h5 text-muted">Actualizar presupuesto</h2>
 </div>
 
 <div class="container py-4">
     <?php include_once "./app/views/inc/btn_back.php"; ?>
     <?php
-    if ($datos_factura->rowCount() == 1) {
-        $datos_factura = $datos_factura->fetch();
+    if ($datos_presupuesto->rowCount() == 1) {
+        $datos_presupuesto = $datos_presupuesto->fetch();
     ?>
-        <form action="<?php echo APP_URL; ?>app/ajax/facturaAjax.php" method="POST" class="FormularioAjax" autocomplete="off">
+        <form action="<?php echo APP_URL; ?>app/ajax/presupuestoAjax.php" method="POST" class="FormularioAjax" autocomplete="off">
 
-            <input type="hidden" name="modulo_factura" value="actualizar">
-            <input type="hidden" name="factura_id" value="<?php echo $datos_factura['factura_id']; ?>">
+            <input type="hidden" name="modulo_presupuesto" value="actualizar">
+            <input type="hidden" name="presupuesto_id" value="<?php echo $datos_presupuesto['presupuesto_id']; ?>">
 
             <div class="mb-4">
                 <label for="cliente_id" class="form-label">Cliente</label>
@@ -29,7 +29,7 @@ $datos_detalle_factura = $insMain->seleccionarDatos("Todos", "detalle_factura", 
                     $clientes = $clientes->fetchAll();
 
                     foreach ($clientes as $cliente) {
-                        $selected = ($cliente['cliente_id'] == $datos_factura['cliente_id']) ? "selected" : "";
+                        $selected = ($cliente['cliente_id'] == $datos_presupuesto['cliente_id']) ? "selected" : "";
                         echo '<option value="' . $cliente['cliente_id'] . '" ' . $selected . '>'
                             . $cliente['cliente_nombre'] . ' ' . $cliente['cliente_apellido']
                             . '</option>';
@@ -56,7 +56,7 @@ $datos_detalle_factura = $insMain->seleccionarDatos("Todos", "detalle_factura", 
                     <input type="number" class="form-control" name="producto_cantidad" id="producto_cantidad">
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label">AGREGAR A LA FACTURA:</label>
+                    <label class="form-label">AGREGAR AL PRESUPUESTO:</label>
                     <button id="btn-agregar" class="btn btn-primary form-control">Agregar</button>
                 </div>
             </div>
@@ -76,11 +76,11 @@ $datos_detalle_factura = $insMain->seleccionarDatos("Todos", "detalle_factura", 
                     <tbody>
                         <?php
                         $total = 0;
-                        foreach ($datos_detalle_factura as $ddf) {
+                        foreach ($datos_detalle_presupuesto as $ddf) {
                             $producto = $insMain->seleccionarDatos("Unico", "producto", "producto_id", $ddf['producto_id']);
                             $producto = $producto->fetch();
 
-                            $subtotal = $producto['producto_precio'] * $ddf['detalle_factura_cantidad'];
+                            $subtotal = $producto['producto_precio'] * $ddf['detalle_presupuesto_cantidad'];
                             $total += $subtotal;
 
                             echo '<tr>
@@ -90,7 +90,7 @@ $datos_detalle_factura = $insMain->seleccionarDatos("Todos", "detalle_factura", 
                                     </td>
                                     <td><input type="hidden" name="producto_nombre[]" value="' . $producto['producto_nombre'] . '">' . $producto['producto_nombre'] . '</td>
                                     <td><input type="hidden" name="producto_precio[]" value="' . $producto['producto_precio'] . '">$' . number_format($producto['producto_precio'], 2, '.', '') . '</td>
-                                    <td><input type="hidden" name="producto_cantidad[]" value="' . $ddf['detalle_factura_cantidad'] . '">' . $ddf['detalle_factura_cantidad'] . '</td>
+                                    <td><input type="hidden" name="producto_cantidad[]" value="' . $ddf['detalle_presupuesto_cantidad'] . '">' . $ddf['detalle_presupuesto_cantidad'] . '</td>
                                     <td>$' . number_format($subtotal, 2) . '</td>
                                     <td><button type="button" class="btn btn-danger btn-sm" onclick="eliminarProducto(this)">Eliminar</button></td>
                                 </tr>';
@@ -102,11 +102,11 @@ $datos_detalle_factura = $insMain->seleccionarDatos("Todos", "detalle_factura", 
 
             <div class="text-end mb-4">
                 <h5>Total: $<span id="total"><?php echo number_format($total, 2); ?></span></h5>
-                <input type="hidden" name="factura_total" id="factura_total" value="<?php echo number_format($total, 2); ?>">
+                <input type="hidden" name="presupuesto_total" id="presupuesto_total" value="<?php echo number_format($total, 2); ?>">
             </div>
 
             <div class="text-center">
-                <button type="submit" class="btn btn-success rounded-pill">Actualizar factura</button>
+                <button type="submit" class="btn btn-success rounded-pill">Actualizar presupuesto</button>
             </div>
         </form>
 </div>
@@ -132,7 +132,7 @@ $datos_detalle_factura = $insMain->seleccionarDatos("Todos", "detalle_factura", 
             nuevoTotal += precio * cantidad;
         });
         document.getElementById('total').textContent = nuevoTotal.toFixed(2);
-        document.getElementById('factura_total').value = nuevoTotal.toFixed(2);
+        document.getElementById('presupuesto_total').value = nuevoTotal.toFixed(2);
     }
 
     document.getElementById('btn-agregar').addEventListener('click', function(e) {

@@ -81,11 +81,11 @@ function alertas_ajax(alerta) {
                 document.querySelector(".FormularioAjax").reset();
             }
         });
-        //Limpiar tabla de productos de la vista "crear facturas"
+        //Limpiar tabla de productos de la vista "crear presupuestos"
         document.querySelector('#tabla-productos tbody').innerHTML = '';
         total = 0;
         document.getElementById('total').textContent = '0.00';
-        document.getElementById('factura_total').value = '';
+        document.getElementById('presupuesto_total').value = '';
 
     } else if (alerta.tipo == "redireccionar") {
         window.location.href = alerta.url;

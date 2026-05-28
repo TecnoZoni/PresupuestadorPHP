@@ -1,15 +1,15 @@
 <div class="container-fluid mb-4">
-    <h1 class="h3">Factura</h1>
-    <h2 class="h5 text-muted">Buscar factura</h2>
+    <h1 class="h3">Presupuesto</h1>
+    <h2 class="h5 text-muted">Buscar presupuesto</h2>
 </div>
 
 <div class="container py-4">
 
     <?php
 
-    use app\controllers\invoiceController;
+    use app\controllers\presupuestoController;
 
-    $insFactura = new invoiceController();
+    $insPresupuesto = new presupuestoController();
     if (!isset($_SESSION[$url[0]]) && empty($_SESSION[$url[0]])) {
     ?>
 
@@ -49,7 +49,7 @@
         </div>
 
     <?php
-        echo $insFactura->listarFacturaControlador($url[1], 10, $url[0], $_SESSION[$url[0]]);
+        echo $insPresupuesto->listarPresupuestoControlador($url[1], 10, $url[0], $_SESSION[$url[0]]);
     }
     ?>
 

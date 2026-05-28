@@ -1,0 +1,20 @@
+# Dependencias
+/vendor/
+/node_modules/
+
+# Configuración sensible (credenciales DB)
+.env
+config/server.php
+
+# Logos y archivos subidos por el usuario
+app/views/fotos/*
+!app/views/fotos/.gitkeep
+
+# Generados / binarios
+*.log
+*.pdf
+*.exe
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
