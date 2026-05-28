@@ -13,7 +13,7 @@
             <div class="col-md-6">
                 <label for="producto_codigo" class="form-label">Código</label>
                 <input type="text" class="form-control" id="producto_codigo" name="producto_codigo"
-                    placeholder="Ej: PRD-001" pattern="[A-Za-z0-9-]{4,20}" maxlength="20" required>
+                    placeholder="Ej: PRD-001" pattern="[A-Za-z0-9-]{1,20}" maxlength="20" required>
             </div>
             <div class="col-md-6">
                 <label for="producto_nombre" class="form-label">Nombre</label>

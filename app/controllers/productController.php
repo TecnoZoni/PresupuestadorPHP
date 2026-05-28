@@ -26,7 +26,7 @@ class productController extends mainModel
         }
 
 
-        if ($this->verificarDatos("[A-Za-z0-9-]{4,20}", $codigo)) {
+        if ($this->verificarDatos("[A-Za-z0-9-]{1,20}", $codigo)) {
             $alerta = [
                 "tipo" => "simple",
                 "titulo" => "Ocurrió un error inesperado",
@@ -295,7 +295,7 @@ class productController extends mainModel
         }
 
 
-        if ($this->verificarDatos("[A-Za-z0-9-]{4,20}", $codigo)) {
+        if ($this->verificarDatos("[A-Za-z0-9-]{1,20}", $codigo)) {
             $alerta = [
                 "tipo" => "simple",
                 "titulo" => "Ocurrió un error inesperado",
