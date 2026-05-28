@@ -5,6 +5,7 @@ namespace app\controllers;
 use app\models\mainModel;
 
 use app\library\fpdf\FPDF;
+use app\library\pdf\PresupuestoPDF;
 
 class presupuestoController extends mainModel
 {
@@ -593,79 +594,22 @@ class presupuestoController extends mainModel
             $datosPresupuesto = $datosPresupuesto->fetchAll();
         }
 
-        function convertirUTF8($texto)
-        {
-            return mb_convert_encoding($texto, 'ISO-8859-1', 'UTF-8');
-        }
-
-        $pdf = new FPDF('P', 'mm', 'A4');
-        $pdf->AddPage();
-
-        $logoPath = "../views/fotos/" . $datosNegocio['configuracion_logo'];
-
-        if (!empty($datosNegocio['configuracion_logo']) && file_exists($logoPath)) {
-            $pdf->Image($logoPath, 10, 10, 40);
-        }
-
-        // Datos de la empresa
-        $pdf->SetFont('Arial', 'B', 15);
-        $pdf->SetXY(130, 10);
-        $pdf->Cell(70, 5, "Datos de la empresa", 0, 1, 'L');
-
-        $pdf->SetFont('Arial', '', 12);
-        $pdf->SetXY(130, 20);
-        $pdf->Cell(70, 5,   convertirUTF8("Nombre: " . $datosNegocio['configuracion_nombre']), 0, 1, 'L');
-        $pdf->SetXY(130, 25);
-        $pdf->Cell(70, 5,   convertirUTF8("Teléfono: " . $datosNegocio['configuracion_telefono']), 0, 1, 'L');
-        $pdf->SetXY(130, 30);
-        $pdf->Cell(70, 5, convertirUTF8("Email: " . $datosNegocio['configuracion_email']), 0, 1, 'L');
-        $pdf->SetXY(130, 35);
-        $pdf->Cell(70, 5, convertirUTF8("CUIT: " . $datosNegocio['configuracion_cuit']), 0, 1, 'L');
-        $pdf->SetXY(130, 40);
-        $pdf->Cell(70, 5, convertirUTF8("Dirección: " . $datosNegocio['configuracion_direccion']), 0, 1, 'L');
-
         $datosPresupuestoGeneral = $datosPresupuesto[0];
 
-        // Datos del cliente
-        $pdf->SetXY(10, 60);
-        $pdf->SetFont('Arial', 'B', 12);
-        $pdf->Cell(0, 6, "Datos del cliente", 0, 1);
+        $logoPath = dirname(__DIR__) . '/views/fotos/' . $datosNegocio['configuracion_logo'];
 
-        $pdf->SetFont('Arial', '', 12);
-        $pdf->Cell(0, 6, convertirUTF8("Nombre: " . $datosPresupuestoGeneral['cliente_nombre'] . " " . $datosPresupuestoGeneral['cliente_apellido']), 0, 1);
-        $pdf->Cell(0, 6, convertirUTF8("Teléfono: " . $datosPresupuestoGeneral['cliente_telefono']), 0, 1);
-        $pdf->Cell(0, 6, convertirUTF8("Email: " . $datosPresupuestoGeneral['cliente_email']), 0, 1);
+        $pdf = new PresupuestoPDF('P', 'mm', 'A4');
+        $pdf->AliasNbPages();
+        $pdf->SetAutoPageBreak(true, 20);
+        $pdf->configurarEmpresa($datosNegocio, $logoPath);
+        $pdf->configurarDocumento($datosPresupuestoGeneral['presupuesto_id'], $datosPresupuestoGeneral['presupuesto_fecha']);
+        $pdf->AddPage();
 
-        // Número y fecha del presupuesto
-        $pdf->Ln(5);
-        $pdf->SetFont('Arial', 'B', 12);
-        $pdf->Cell(0, 6, convertirUTF8("Presupuesto N° ") . $datosPresupuestoGeneral['presupuesto_id'], 0, 1);
-        $pdf->Cell(0, 6, "Fecha: " . $datosPresupuestoGeneral['presupuesto_fecha'], 0, 1);
-
-        // Tabla de productos
-        $pdf->Ln(5);
-        $pdf->SetFont('Arial', 'B', 11);
-        $pdf->Cell(40, 7, convertirUTF8('Código'), 1);
-        $pdf->Cell(60, 7, 'Producto', 1);
-        $pdf->Cell(20, 7, 'Cant.', 1, 0, 'C');
-        $pdf->Cell(35, 7, 'Precio Unit.', 1, 0, 'R');
-        $pdf->Cell(35, 7, 'Subtotal', 1, 1, 'R');
-
-        $pdf->SetFont('Arial', '', 11);
-
-        foreach ($datosPresupuesto as $row) {
-            $pdf->Cell(40, 6, convertirUTF8($row['producto_codigo']), 1);
-            $pdf->Cell(60, 6, convertirUTF8($row['producto_nombre']), 1);
-            $pdf->Cell(20, 6, $row['detalle_presupuesto_cantidad'], 1, 0, 'C');
-            $pdf->Cell(35, 6, number_format($row['detalle_presupuesto_precio_unitario'], 2), 1, 0, 'R');
-            $pdf->Cell(35, 6, number_format($row['detalle_presupuesto_subtotal'], 2), 1, 1, 'R');
-        }
-
-        // Total
-        $pdf->Ln(5);
-        $pdf->SetFont('Arial', 'B', 12);
-        $pdf->Cell(155, 7, 'Total', 1);
-        $pdf->Cell(35, 7, '$' . number_format($datosPresupuestoGeneral['presupuesto_total'], 2), 1, 1, 'R');
+        $pdf->bloqueCliente($datosPresupuestoGeneral);
+        $pdf->tablaEncabezado();
+        $pdf->tablaFilas($datosPresupuesto);
+        $pdf->bloqueTotales($datosPresupuestoGeneral['presupuesto_total']);
+        $pdf->seccionesEstaticas();
 
         header('Content-Type: application/pdf');
         header('Content-Disposition: inline; filename="presupuesto_' . $id . '.pdf"');
